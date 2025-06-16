@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.elvishew.xlog.XLog
 import com.shencoder.mvvmkit.base.repository.BaseNothingRepository
 import com.shencoder.mvvmkit.base.viewmodel.BaseViewModel
+import com.shencoder.mvvmkit.ext.httpRequest
 import com.shencoder.mvvmkit.ext.toastWarning
 import com.shencoder.srs_rtc_android_client.constant.ChatMode
 import com.shencoder.srs_rtc_android_client.constant.MMKVConstant
@@ -14,8 +15,10 @@ import com.shencoder.srs_rtc_android_client.constant.SocketIoConnectionStatus
 import com.shencoder.srs_rtc_android_client.helper.call.CallSocketIoClient
 import com.shencoder.srs_rtc_android_client.helper.call.SignalEventCallback
 import com.shencoder.srs_rtc_android_client.helper.call.SocketIoConnectionStatusCallback
+import com.shencoder.srs_rtc_android_client.helper.call.bean.ClientInfoBean
 import com.shencoder.srs_rtc_android_client.helper.call.bean.P2pRequestCallBean
 import com.shencoder.srs_rtc_android_client.helper.call.bean.RequestCallBean
+import com.shencoder.srs_rtc_android_client.http.RetrofitClient
 import com.shencoder.srs_rtc_android_client.http.bean.UserInfoBean
 import com.shencoder.srs_rtc_android_client.ui.callee_chat.CalleeChatActivity
 import com.shencoder.srs_rtc_android_client.ui.chat_room.EnterRoomIdActivity
@@ -36,6 +39,8 @@ class MainViewModel(
 
     private val callSocketIoClient: CallSocketIoClient by inject()
 
+    private val retrofitClient: RetrofitClient by inject()
+
     /**
      * 本地用户信息
      */
@@ -55,6 +60,14 @@ class MainViewModel(
 
         override fun connected() {
             connectionStatusField.set(SocketIoConnectionStatus.CONNECTED)
+            CallSocketIoClient.getInstance().getAllOnlineClients(
+                { list ->
+                    XLog.i("getAllOnlineClients list: $list")
+                }, { code, reason ->
+
+                })
+
+            getAllOnlineUsers()
         }
 
         override fun disconnected() {
@@ -82,6 +95,14 @@ class MainViewModel(
             val intent = Intent(applicationContext, P2pCalleeActivity::class.java)
             intent.putExtra(P2pCalleeActivity.REQUEST_CALL, bean)
             startActivity(intent)
+        }
+
+        override fun onClientOnline(bean: ClientInfoBean) {
+            XLog.i("onClientOnline: $bean")
+        }
+
+        override fun onClientOffline(bean: ClientInfoBean) {
+            XLog.i("onClientOffline: $bean")
         }
     }
 
@@ -161,5 +182,16 @@ class MainViewModel(
             return true
         }
         return false
+    }
+
+    fun getAllOnlineUsers() {
+        httpRequest({ retrofitClient.getApiService().getAllOnlineUsers() }, {
+            val data = it.data
+            XLog.i("from http getAllOnlineUsers : $data")
+        }, {
+            XLog.w("from http getAllOnlineUsers failure: ${it.code}, ${it.msg}")
+        }, {
+            XLog.e("from http getAllOnlineUsers error: ${it.throwable.message}")
+        })
     }
 }

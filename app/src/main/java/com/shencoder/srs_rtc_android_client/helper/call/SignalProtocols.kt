@@ -149,6 +149,7 @@ object P2PClientReqCmd {
     const val REQ_P2P_SEND_ICE = "req_p2p_send_ice"
     const val REQ_P2P_HANG_UP = "req_p2p_hang_up"
     const val REQ_P2P_RESET_STATUS = "req_p2p_reset_status"
+    const val REQ_GET_ALL_ONLINE_CLIENTS = "req_get_all_online_clients"
 }
 
 object P2PClientNotifyCmd {
@@ -160,4 +161,6 @@ object P2PClientNotifyCmd {
     const val NOTIFY_P2P_RECEIVE_ICE = "notify_p2p_receive_ice"
     const val NOTIFY_P2P_HANG_UP = "notify_p2p_hang_up"
     const val NOTIFY_P2P_OFFLINE_DURING_CALL = "notify_p2p_offline_during_call"
+    const val NOTIFY_CLIENT_ONLINE = "notify_client_online"
+    const val NOTIFY_CLIENT_OFFLINE = "notify_client_offline"
 }

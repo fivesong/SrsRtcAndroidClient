@@ -13,7 +13,7 @@ data class ClientInfoBean(
     @Json(name = "createdAt")
     val createdAt: String,
     @Json(name = "id")
-    val id: Int,
+    val id: Long,
     @Json(name = "userId")
     val userId: String,
     @Json(name = "userType")
@@ -36,7 +36,7 @@ data class ClientInfoBean(
     }
 
     override fun hashCode(): Int {
-        var result = id
+        var result = id.hashCode()
         result = 31 * result + userId.hashCode()
         result = 31 * result + userType.hashCode()
         return result

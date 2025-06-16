@@ -14,7 +14,7 @@ data class UserInfoBean(
     @Json(name = "createdAt")
     val createdAt: String,
     @Json(name = "id")
-    val id: Int,
+    val id: Long,
     @Json(name = "userId")
     val userId: String,
     @Json(name = "userType")
@@ -54,7 +54,7 @@ data class UserInfoBean(
     }
 
     override fun hashCode(): Int {
-        var result = id
+        var result = id.hashCode()
         result = 31 * result + userId.hashCode()
         result = 31 * result + userType.hashCode()
         return result

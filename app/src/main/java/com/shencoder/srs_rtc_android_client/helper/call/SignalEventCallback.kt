@@ -98,5 +98,8 @@ interface SignalEventCallback {
     fun p2pHangUp(bean: HangUpBean) {}
 
     fun p2pOfflineDuringCall(bean: OfflineDuringCallBean) {}
+
+    fun onClientOnline(bean: ClientInfoBean) {}
+    fun onClientOffline(bean: ClientInfoBean) {}
     //</editor-fold>
 }

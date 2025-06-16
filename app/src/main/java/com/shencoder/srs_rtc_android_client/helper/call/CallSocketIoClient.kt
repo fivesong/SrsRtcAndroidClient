@@ -82,7 +82,7 @@ class CallSocketIoClient private constructor() {
 
         private inline fun Socket.emitEvent(
             event: String,
-            args: Array<Any>,
+            args: Array<Any>? = null,
             crossinline callback: (json: String) -> Unit
         ) {
             emit(event, args, object : EventCallback() {
@@ -183,6 +183,14 @@ class CallSocketIoClient private constructor() {
             }
             onEvent(P2PClientNotifyCmd.NOTIFY_P2P_OFFLINE_DURING_CALL) { json ->
                 notifyP2pOfflineDuringCall(json)
+            }
+
+            onEvent(P2PClientNotifyCmd.NOTIFY_CLIENT_ONLINE) { json ->
+                notifyClientOnline(json)
+            }
+
+            onEvent(P2PClientNotifyCmd.NOTIFY_CLIENT_OFFLINE) { json ->
+                notifyClientOffline(json)
             }
         }
         socket.connect()
@@ -546,6 +554,32 @@ class CallSocketIoClient private constructor() {
         socket.emit(SfuClientReqCmd.REQ_RESET_STATUS)
     }
 
+    fun getAllOnlineClients(
+        success: ((List<ClientInfoBean>) -> Unit)? = null,
+        failure: ((code: Int, reason: String) -> Unit)? = null
+    ) {
+        socket.emitEvent(P2PClientReqCmd.REQ_GET_ALL_ONLINE_CLIENTS) { json ->
+            val type =
+                Types.newParameterizedType(
+                    BaseResponseBean::class.java,
+                    Types.newParameterizedType(
+                        List::class.java,
+                        ClientInfoBean::class.java
+                    )
+                )
+            val bean: BaseResponseBean<List<ClientInfoBean>>? = MoshiUtil.fromJson(json, type)
+            post {
+                bean?.run {
+                    if (isSuccess()) {
+                        success?.invoke(data!!)
+                    } else {
+                        failure?.invoke(code, msg)
+                    }
+                }
+            }
+        }
+    }
+
     /*************************************P2P*******************************************/
 
     //<editor-fold desc="P2P">
@@ -780,6 +814,7 @@ class CallSocketIoClient private constructor() {
             }
         }
     }
+
     private fun notifyP2pReceiveIce(json: String) {
         val bean = MoshiUtil.fromJson(json, P2pReceiveIceBean::class.java)
         bean?.let {
@@ -788,6 +823,7 @@ class CallSocketIoClient private constructor() {
             }
         }
     }
+
     private fun notifyP2pHangUp(json: String) {
         val bean = MoshiUtil.fromJson(json, HangUpBean::class.java)
         bean?.let {
@@ -797,11 +833,29 @@ class CallSocketIoClient private constructor() {
         }
     }
 
-    private fun notifyP2pOfflineDuringCall(json: String){
+    private fun notifyP2pOfflineDuringCall(json: String) {
         val bean = MoshiUtil.fromJson(json, OfflineDuringCallBean::class.java)
         bean?.let {
             postDispatchSignalEventCallback { callback ->
                 callback.p2pOfflineDuringCall(it)
+            }
+        }
+    }
+
+    private fun notifyClientOnline(json: String) {
+        val bean = MoshiUtil.fromJson(json, ClientInfoBean::class.java)
+        bean?.let {
+            postDispatchSignalEventCallback { callback ->
+                callback.onClientOnline(it)
+            }
+        }
+    }
+
+    private fun notifyClientOffline(json: String) {
+        val bean = MoshiUtil.fromJson(json, ClientInfoBean::class.java)
+        bean?.let {
+            postDispatchSignalEventCallback { callback ->
+                callback.onClientOffline(it)
             }
         }
     }

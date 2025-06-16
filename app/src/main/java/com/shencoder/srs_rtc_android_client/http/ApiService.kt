@@ -57,4 +57,10 @@ interface ApiService {
     @GET("/srs_rtc/user/getAllUserInfo")
     suspend fun getAllUser(): ApiResponse<List<UserInfoBean>>
 
+    /**
+     * 获取所有在线用户信息
+     */
+    @GET("/srs_rtc/client/getAllOnlineUsers")
+    suspend fun getAllOnlineUsers(): ApiResponse<List<UserInfoBean>>
+
 }
