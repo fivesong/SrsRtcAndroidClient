@@ -12,14 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 关键：替换 Gradle 镜像为国内源
-      - name: Configure Gradle mirrors
-        run: |
-          mkdir -p ~/.gradle
-          echo "systemProp.https.proxyHost=mirrors.cloud.tencent.com" >> ~/.gradle/gradle.properties
-          echo "systemProp.https.proxyPort=443" >> ~/.gradle/gradle.properties
-          echo "org.gradle.jvmargs=-Xmx4096m" >> ~/.gradle/gradle.properties
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -30,11 +22,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # 强制刷新依赖，解决缓存问题
       - name: Build Debug APK
         run: ./gradlew assembleDebug --refresh-dependencies
 
-      - name: Upload APK as artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
