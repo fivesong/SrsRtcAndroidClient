@@ -45,7 +45,7 @@ object SIGNAL {
      * 信令服务地址
      * ip或域名
      */
-    const val SERVER_ADDRESS = "10.16.22.64"
+    const val SERVER_ADDRESS = "192.168.0.104"
 
     /**
      * api请求http端口
@@ -95,7 +95,7 @@ object SRS {
      * SRS服务地址
      * ip或域名
      */
-    const val SERVER_ADDRESS = "10.16.22.64"
+    const val SERVER_ADDRESS = "192.168.0.104"
 
     /**
      * SRS服务api请求http端口
