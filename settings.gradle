@@ -4,7 +4,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url 'https://mirror.ghproxy.com/https://jitpack.io' }
+        maven { url 'https://jitpack.mirror.ghproxy.com/' }
     }
 }
 rootProject.name = "SrsRtcAndroidClient"
