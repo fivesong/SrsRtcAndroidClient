@@ -3,8 +3,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://maven.aliyun.com/repository/public/' }
-        maven { url 'https://maven.aliyun.com/repository/jcenter/' }
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://mirror.ghproxy.com/https://jitpack.io' }
     }
 }
 rootProject.name = "SrsRtcAndroidClient"
