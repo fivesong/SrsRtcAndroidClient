@@ -1,4 +1,4 @@
-name: Android Build and Release
+name: Android Build (Debug APK)
 
 on:
   push:
@@ -25,41 +25,8 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --refresh-dependencies
 
-      - name: Upload Debug APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
-
-      # Steps for building and signing Release APK/AAB
-      # You need to set up the following GitHub Secrets:
-      # - KEYSTORE_BASE64: Base64 encoded content of your .jks or .keystore file.
-      # - KEYSTORE_PASSWORD: Password for your keystore.
-      # - KEY_ALIAS: Alias for your key within the keystore.
-      # - KEY_PASSWORD: Password for your key alias.
-      - name: Decode Keystore
-        if: ${{ secrets.KEYSTORE_BASE64 != null && secrets.KEYSTORE_PASSWORD != null && secrets.KEY_ALIAS != null && secrets.KEY_PASSWORD != null }}
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/srsrtc.jks
-          echo "storeFile=srsrtc.jks" >> gradle.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> gradle.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> gradle.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> gradle.properties
-
-      - name: Build Release AAB and APK
-        if: ${{ secrets.KEYSTORE_BASE64 != null && secrets.KEYSTORE_PASSWORD != null && secrets.KEY_ALIAS != null && secrets.KEY_PASSWORD != null }}
-        run: ./gradlew assembleRelease bundleRelease --refresh-dependencies
-
-      - name: Upload Release AAB
-        if: ${{ secrets.KEYSTORE_BASE64 != null && secrets.KEYSTORE_PASSWORD != null && secrets.KEY_ALIAS != null && secrets.KEY_PASSWORD != null }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-aab
-          path: app/build/outputs/bundle/release/app-release.aab
-
-      - name: Upload Release APK
-        if: ${{ secrets.KEYSTORE_BASE64 != null && secrets.KEYSTORE_PASSWORD != null && secrets.KEY_ALIAS != null && secrets.KEY_PASSWORD != null }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-apk
-          path: app/build/outputs/apk/release/app-release.apk
